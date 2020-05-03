@@ -1,5 +1,6 @@
-import { UmPar } from "./pesos";
+import { UmPar, DoisPares, PesoBase } from "./pesos";
 
 export class PesoFactory {
-    public static umPar = () => new UmPar("Um Par", 1);
+    public static umPar = (): PesoBase => new UmPar();
+    public static doisPares = (): PesoBase => new DoisPares();
 }
