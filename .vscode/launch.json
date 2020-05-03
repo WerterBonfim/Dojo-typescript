@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+      {
+        "name": "Debug app",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceRoot}",
+        "runtimeArgs": ["-r", "ts-node/register"],
+        "args": ["${workspaceRoot}/index.ts"]
+      },
+
+      {
+        "type": "node",
+        "request": "attach",
+        "name": "teste via Nodemon",
+        "processId": "${command:PickProcess}",
+        "restart": true,
+        "protocol": "inspector"
+      }
+    ]
+  }
