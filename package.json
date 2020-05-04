@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node --require ts-node/register --inspect-brk index.ts",
     "test": "ts-node jest.startup.ts",
-    "test:debug": "node --require ts-node/register --inspect-brk jest.startup.ts"
+    "test:debug": "node --require ts-node/register --inspect-brk jest.startup.ts",
+    "poker-test": "node --require ts-node/register jest.startup.ts poker"
   },
   "author": "",
   "license": "ISC",

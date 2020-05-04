@@ -1,6 +1,5 @@
 // http://dojopuzzles.com/problemas/exibe/poker/
 
-
 import 'jest';
 import { Carta, CartaBase } from './carta';
 import { AnalisadorDePeso } from './analisador-peso';
@@ -18,6 +17,9 @@ const naoEUmaSequencia = (mão: CartaBase[]) => {
     expect(resultado).toBeFalsy();
 
 }
+
+
+
 
 describe('Jogo de poker', () => {
 
@@ -151,7 +153,8 @@ describe('Jogo de poker', () => {
             });
 
             test('Dois Flush, vence o segundo jogador pois tem a carta mais alto (encabeçada) ', () => {
-
+                
+                
                 
 
             });
