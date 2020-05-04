@@ -65,9 +65,22 @@ export class AnalisadorDePeso {
 
     public eUmaSequencia(mão: CartaBase[]): boolean {
         
-        //this.agrupadoPorParEValor()
+        const sequencia = mão
+            .sort( (a, b) => a.valor - b.valor );
+            
 
-        return false;
+        for (let indice = 0; indice < 4; indice++) {
+            
+            const 
+                carta = sequencia[indice],
+                proximaSequencia = carta.valor + 1,
+                proximaCarta = sequencia[indice + 1];
+            
+            if (proximaCarta.valor !== proximaSequencia)
+                return false;
+        }
+
+        return true;
     }
 
     /**

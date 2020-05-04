@@ -38,10 +38,10 @@ export class Carta {
     public static H9: CartaBase = { nome: 'H9', valor: 9 }
     public static S9: CartaBase = { nome: 'S9', valor: 9 }
     public static C9: CartaBase = { nome: 'C9', valor: 9 }
-    public static D1: CartaBase = { nome: 'D10', valor: 10 }
-    public static H1: CartaBase = { nome: 'H10', valor: 10 }
-    public static S1: CartaBase = { nome: 'S10', valor: 10 }
-    public static C1: CartaBase = { nome: 'C10', valor: 10 }
+    public static D10: CartaBase = { nome: 'D10', valor: 10 }
+    public static H10: CartaBase = { nome: 'H10', valor: 10 }
+    public static S10: CartaBase = { nome: 'S10', valor: 10 }
+    public static C10: CartaBase = { nome: 'C10', valor: 10 }
     public static DJ: CartaBase = { nome: 'DJ', valor: 11 }
     public static HJ: CartaBase = { nome: 'HJ', valor: 11 }
     public static SJ: CartaBase = { nome: 'SJ', valor: 11 }
