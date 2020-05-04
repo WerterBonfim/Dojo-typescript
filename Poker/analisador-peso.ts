@@ -83,8 +83,25 @@ export class AnalisadorDePeso {
         return true;
     }
 
+    public eUmFlush(mão: CartaBase[]): Boolean {
+
+        const eSequencia = this.eUmaSequencia(mão);
+        if (eSequencia)
+            return false;
+
+        const naipes = this.agruparCartasPorNaipe(mão);
+        const eFlush = naipes
+            .filter(x => x === 5)
+            .length === 1;
+
+        return eFlush;
+        
+
+    }
+
+
     /**
-     * Extrai dois arrays, um agrupado por nipe, outro agrupado por valor e distinto
+     * Extrai dois arrays, um agrupado por naipe, outro agrupado por valor e distinto
      * Depois concatena (concat) os dois arrays
      * @example => Array(4) [2, 1, 1, 1]  
      * => Array(4) [1, 1, 2, 1]        
@@ -93,15 +110,15 @@ export class AnalisadorDePeso {
      */
     private agrupadoDistintamentePorParEValor(mão: CartaBase[]): number[] {
 
-        const agrupadoPorNipe = this.agruparCartasPorNipe(mão)
+        const agrupadoPorNaipe = this.agruparCartasPorNaipe(mão)
         // => Array(4) [2, 1, 1, 1]  
         const agrupadoPorValor = this.agruparCartasPorValor(mão)
         // => Array(4) [2, 1, 1, 1]            
 
-        //console.log('por Nipe', agrupadoPorNipe);
+        //console.log('por Naipe', agrupadoPorNaipe);
         //console.log('por Valor', agrupadoPorValor);
         // => Array(2) [2, 1]
-        const mesclado = mergeArray(agrupadoPorNipe, agrupadoPorValor);
+        const mesclado = mergeArray(agrupadoPorNaipe, agrupadoPorValor);
         //console.log('mesclado', mesclado);
 
         return mesclado;
@@ -109,7 +126,7 @@ export class AnalisadorDePeso {
     }
 
     /**
-     * Extrai dois arrays, um agrupado por nipe, outro agrupado por valor.
+     * Extrai dois arrays, um agrupado por naipe, outro agrupado por valor.
      * Depois concatena (concat) os dois arrays
      * @param mão Mão do usuario
      * @example 
@@ -122,28 +139,34 @@ export class AnalisadorDePeso {
 
         debugger; 
 
-        const agrupadoPorNipe = this.agruparCartasPorNipe(mão);
+        const agrupadoPorNaipe = this.agruparCartasPorNaipe(mão);
         // => Array(4) [2, 1, 1, 1]  
         const agrupadoPorValor = this.agruparCartasPorValor(mão);
         // => Array(4) [2, 1, 1, 1]            
 
-        //console.log('por Nipe', agrupadoPorNipe);
+        //console.log('por Naipe', agrupadoPorNaipe);
         //console.log('por Valor', agrupadoPorValor);
         // => Array(8) [ 2, 1, 1, 1, 1, 1, 2, 1 ]  
-        const concatenado = agrupadoPorNipe.concat(agrupadoPorValor);        
+        const concatenado = agrupadoPorNaipe.concat(agrupadoPorValor);        
 
         return concatenado;
 
     }
 
-    private agruparCartasPorNipe(mão: CartaBase[]): number[] {
+    /**
+     * 
+     * @param mão Cartas do usuario
+     * @returns Array com a quantidade de cartas agrupadas por naipe
+     * @example Array(4) [2, 1, 1, 1] => 2 cartas repetidas
+     */
+    private agruparCartasPorNaipe(mão: CartaBase[]): number[] {
 
-        const nipes = mão.map(x => x.nome);
+        const naipes = mão.map(x => x.nome);
 
-        const groupByNipes = groupBy(nipes, '0');
+        const groupByNaipes = groupBy(naipes, '0');
         // => Object {C: Array(2), D: Array(1), H: Array(1), S: Array(1)}  
-        const resulto = Object.keys(groupByNipes)
-            .map(x => groupByNipes[x])
+        const resulto = Object.keys(groupByNaipes)
+            .map(x => groupByNaipes[x])
             // => Array(4) [Array(2), Array(1), Array(1), Array(1)]    
             .map(x => x.length);
         // => Array(4) [2, 1, 1, 1]        
@@ -156,11 +179,11 @@ export class AnalisadorDePeso {
 
         const valores = mão.map(x => x.valor.toString());
 
-        const groupByNipes = groupBy(valores, 'slice', 'funcao');
+        const groupByNaipes = groupBy(valores, 'slice', 'funcao');
         
         // => Object {C: Array(2), D: Array(1), H: Array(1), S: Array(1)}  
-        const resultado = Object.keys(groupByNipes)
-            .map(x => groupByNipes[x])
+        const resultado = Object.keys(groupByNaipes)
+            .map(x => groupByNaipes[x])
             // => Array(4) [Array(2), Array(1), Array(1), Array(1)]    
             .map(x => x.length);
         // => Array(4) [2, 1, 1, 1]        

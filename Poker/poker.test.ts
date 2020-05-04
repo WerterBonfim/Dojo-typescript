@@ -131,6 +131,35 @@ describe('Jogo de poker', () => {
 
 
 
+        describe('Senarios de Flush: mesmo naipe.', () => {
+
+            // Flush: cinco cartas do mesmo naipe, 
+            // que não formam seqüência. Se houver dois ou mais flushes, 
+            // ganhará o que for encabeçado pela carta mais alta; 
+            // se estas forem iguais, considerar-se-á a segunda maior, 
+            // a terceira, se houver necessidade, e assim por diante. 
+            // Só haverá empate se as cinco cartas de dois 
+            // jogadores tiverem os mesmos valores.
+
+
+            test('True, todas as cartas do mesmo naipe', () => {
+
+                const mãoComFlush = [ Carta.C8, Carta.C2, Carta.C10, Carta.C4, Carta.C9 ];
+                const resultado = analisadorDePeso.eUmFlush(mãoComFlush);
+                expect(resultado).toBeTruthy();
+
+            });
+
+            test('Dois Flush, vence o segundo jogador pois tem a carta mais alto (encabeçada) ', () => {
+
+                
+
+            });
+
+
+
+        })
+
 
 
     })
