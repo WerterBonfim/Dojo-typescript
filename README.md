@@ -20,3 +20,12 @@ Os projetos foram extraidos do site [DojoPuzzles ](http://dojopuzzles.com/).
 ### Problemas feitos até o momento:
 
 - Poker
+
+
+### Próximas tarefas
+Incluir em cada projeto:
+```
+ * [ ] Criar um REPL simple
+ * [ ] Integrar com REPL.it
+
+```

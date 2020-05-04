@@ -111,10 +111,10 @@ describe('Jogo de poker', () => {
             test('Duas mãos a primeira vence, pois tem o valor mais alto', () => {
 
                 // Exemplo: A, R, D, V, 10 e 10, 9, 8, 7, Ás (valendo como seis) – vence a primeira.
-                
-                const 
-                    primeiraMaoAlta = [ Carta.CA, Carta.DK, Carta.CQ, Carta.SJ, Carta.H10 ],
-                    segundaMaoBaixa = [ Carta.H10, Carta.S9, Carta.C8, Carta.D7, Carta.H6 ],
+
+                const
+                    primeiraMaoAlta = [Carta.CA, Carta.DK, Carta.CQ, Carta.SJ, Carta.H10],
+                    segundaMaoBaixa = [Carta.H10, Carta.S9, Carta.C8, Carta.D7, Carta.H6],
                     jogador1 = new Jogador('Jogador1', primeiraMaoAlta),
                     jogador2 = new Jogador('Jogador2', segundaMaoBaixa),
                     ganhador = avaliador.calcularGanhador(jogador1, jogador2),
@@ -124,14 +124,12 @@ describe('Jogo de poker', () => {
 
                 expect(primeiraMaoEUmaSequencia).toBeTruthy();
                 expect(segundaMaoEUmaSequencia).toBeTruthy();
-                expect(ganhador).toBe(jogador1);
+                expect(ganhador).toContain(jogador1);
 
 
             });
 
-        })
-
-
+        });
 
         describe('Senarios de Flush: mesmo naipe.', () => {
 
@@ -146,22 +144,112 @@ describe('Jogo de poker', () => {
 
             test('True, todas as cartas do mesmo naipe', () => {
 
-                const mãoComFlush = [ Carta.C8, Carta.C2, Carta.C10, Carta.C4, Carta.C9 ];
+                const mãoComFlush = [Carta.C8, Carta.C2, Carta.C10, Carta.C4, Carta.C9];
                 const resultado = analisadorDePeso.eUmFlush(mãoComFlush);
                 expect(resultado).toBeTruthy();
 
             });
 
-            test('Dois Flush, vence o segundo jogador pois tem a carta mais alto (encabeçada) ', () => {
-                
-                
-                
+            test('Dois Flush, vence o jogador 2 pois tem a carta mais alta (encabeçada) ', () => {
+
+                const
+                    mãoComFlushMenor = [Carta.C2, Carta.C7, Carta.C3, Carta.C5, Carta.C6],
+                    mãoComFlushMaior = [Carta.C2, Carta.C7, Carta.C3, Carta.C5, Carta.C8],
+                    mãoMenorÉUmFlush = analisadorDePeso.eUmFlush(mãoComFlushMenor),
+                    mãoMaiorÉUmFlush = analisadorDePeso.eUmFlush(mãoComFlushMaior),
+                    jogador1 = new Jogador('Jogador 1', mãoComFlushMenor),
+                    jogador2 = new Jogador('Jogador 2', mãoComFlushMaior);
+
+                const ganhador = avaliador.calcularGanhador(jogador1, jogador2);
+
+                expect(mãoMenorÉUmFlush).toBeTruthy();
+                expect(mãoMaiorÉUmFlush).toBeTruthy();
+                expect(ganhador).toContain(jogador2);
+
+
+            });
+
+
+            test('Deve retornar um empate, dois jogadores com o mesmo valor', () => {
+
+                const
+                    mão1 = [Carta.C2, Carta.C7, Carta.C3, Carta.C5, Carta.C6],
+                    mão2 = [Carta.C6, Carta.C3, Carta.C2, Carta.C7, Carta.C5],
+                    mão1ÉUmFlush = analisadorDePeso.eUmFlush(mão1),
+                    mão2ÉUmFlush = analisadorDePeso.eUmFlush(mão2),
+                    jogador1 = new Jogador('Jogador 1', mão1),
+                    jogador2 = new Jogador('Jogador 2', mão2);
+
+                const ganhadores = avaliador.calcularGanhador(jogador1, jogador2);
+
+                expect(mão1ÉUmFlush).toBeTruthy();
+                expect(mão2ÉUmFlush).toBeTruthy();
+                expect(ganhadores).toContain(jogador1);
+                expect(ganhadores).toContain(jogador2);
 
             });
 
 
 
+        });
+
+        // Full House: Um trinca e um par.
+        describe('Senarios de Full House', () => {
+
+            // Full hand, full house ou full: um terno (três cartas do mesmo valor) e um par. 
+            // Exemplo: Dama, Dama, Dama, 9 e 9. Entre dois fulls ganhará aquele que tiver o terno maior.
+
+            test('True para uma mão com full house', () => {
+
+                const mãoComFullHolse = [Carta.CQ, Carta.CQ, Carta.HQ, Carta.S9, Carta.H9];
+                const éFullHouse = analisadorDePeso.eUmFullHouse(mãoComFullHolse);
+                expect(éFullHouse).toBeTruthy();
+
+            });
+
+            test('Ganha o jogador 2 pois tem o terno maior', () => {
+
+                const
+                    mãoComFullHouseMenor = [Carta.CQ, Carta.CQ, Carta.HQ, Carta.S9, Carta.H9],
+                    mãoComFullHouseMaior = [Carta.CK, Carta.CK, Carta.CK, Carta.S9, Carta.H9],
+                    mãoMenorEFullHouse = analisadorDePeso.eUmFullHouse(mãoComFullHouseMenor),
+                    mãoMaiorEFullHouse = analisadorDePeso.eUmFullHouse(mãoComFullHouseMaior),
+                    jogador1 = new Jogador('Jogador 1', mãoComFullHouseMenor),
+                    jogador2 = new Jogador('Jogador 2', mãoComFullHouseMaior);
+
+                const ganhadores = avaliador.calcularGanhador(jogador1, jogador2);
+
+                expect(mãoMenorEFullHouse).toBeTruthy();
+                expect(mãoMaiorEFullHouse).toBeTruthy();
+                expect(ganhadores).toContain(jogador2);
+                expect(ganhadores).not.toContain(jogador1);
+
+
+            });
+
+        });
+
+
+        describe('Quadra', () => {
+            
+            // Quadras: quatro cartas do mesmo valor – 4 Ases, 4 Reis, etc. 
+            // Entre duas ou mais quadras, ganhará a que for formada pelas cartas mais altas.
+
+            test('Quadro cartas de mesmo valor', () => {
+
+                const mãoComQuadraPorNaipe = [ Carta.D10, Carta.D5, Carta.D2, Carta.C4, Carta.DK ];
+                const mãoComQuadraPorValor = [ Carta.D4, Carta.H4, Carta.S4, Carta.C4, Carta.DK ];
+
+                const maoPorNaipeEQuadra = analisadorDePeso.eUmaQuadra(mãoComQuadraPorNaipe);
+                const maoPorValorEQuadra = analisadorDePeso.eUmaQuadra(mãoComQuadraPorValor);
+
+                expect(maoPorNaipeEQuadra).toBeTruthy();
+                expect(maoPorValorEQuadra).toBeTruthy();
+
+            });
+
         })
+
 
 
 

@@ -25,7 +25,7 @@ export class AnalisadorDePeso {
 
 
     //Um Par: Duas cartas do mesmo valor.
-    public éUmPar(mão: CartaBase[]): boolean {        
+    public éUmPar(mão: CartaBase[]): boolean {
 
         const temUmPar = this.agrupadoPorParEValor(mão)
             .filter(x => x === 2)
@@ -41,7 +41,7 @@ export class AnalisadorDePeso {
             .filter(x => x === 2)
             .length === 2;
 
-        return temDoisPares;       
+        return temDoisPares;
 
     }
 
@@ -64,18 +64,18 @@ export class AnalisadorDePeso {
     }
 
     public eUmaSequencia(mão: CartaBase[]): boolean {
-        
+
         const sequencia = mão
-            .sort( (a, b) => a.valor - b.valor );
-            
+            .sort((a, b) => a.valor - b.valor);
+
 
         for (let indice = 0; indice < 4; indice++) {
-            
-            const 
+
+            const
                 carta = sequencia[indice],
                 proximaSequencia = carta.valor + 1,
                 proximaCarta = sequencia[indice + 1];
-            
+
             if (proximaCarta.valor !== proximaSequencia)
                 return false;
         }
@@ -95,7 +95,37 @@ export class AnalisadorDePeso {
             .length === 1;
 
         return eFlush;
-        
+
+
+    }
+
+    public eUmFullHouse(mão: CartaBase[]): boolean {
+
+        const agrupado = this.agrupadoDistintamentePorParEValor(mão);
+
+        const temTresPares = agrupado
+            .filter(x => x === 3)
+            .length === 1;
+
+        const temUmPar = agrupado
+            .filter(x => x === 2)
+            .length === 1;
+
+        const eFullHouse = temTresPares && temUmPar;
+
+        return eFullHouse;
+
+    }
+
+    public eUmaQuadra(mão: CartaBase[]): boolean {
+
+        const agrupado = this.agrupadoDistintamentePorParEValor(mão);
+
+        const tem4CartasComMesmoValor = agrupado
+            .filter(x => x === 4)
+            .length === 1;
+
+        return tem4CartasComMesmoValor;
 
     }
 
@@ -137,7 +167,7 @@ export class AnalisadorDePeso {
      */
     private agrupadoPorParEValor(mão: CartaBase[]): number[] {
 
-        debugger; 
+        debugger;
 
         const agrupadoPorNaipe = this.agruparCartasPorNaipe(mão);
         // => Array(4) [2, 1, 1, 1]  
@@ -147,7 +177,7 @@ export class AnalisadorDePeso {
         //console.log('por Naipe', agrupadoPorNaipe);
         //console.log('por Valor', agrupadoPorValor);
         // => Array(8) [ 2, 1, 1, 1, 1, 1, 2, 1 ]  
-        const concatenado = agrupadoPorNaipe.concat(agrupadoPorValor);        
+        const concatenado = agrupadoPorNaipe.concat(agrupadoPorValor);
 
         return concatenado;
 
@@ -175,12 +205,12 @@ export class AnalisadorDePeso {
 
     }
 
-    private agruparCartasPorValor(mão: CartaBase[]): number[] {        
+    private agruparCartasPorValor(mão: CartaBase[]): number[] {
 
         const valores = mão.map(x => x.valor.toString());
 
         const groupByNaipes = groupBy(valores, 'slice', 'funcao');
-        
+
         // => Object {C: Array(2), D: Array(1), H: Array(1), S: Array(1)}  
         const resultado = Object.keys(groupByNaipes)
             .map(x => groupByNaipes[x])
