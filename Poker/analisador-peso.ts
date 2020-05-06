@@ -1,8 +1,9 @@
-import { CartaBase } from "./carta";
+import { CartaBase, Carta } from "./carta";
 import { PesoFactory } from "./peso-factory";
 import groupBy from "../utils/group-by";
 import { PesoBase } from "./pesos";
 import mergeArray from "../utils/merge-arrays";
+import { UtilPoker } from "./util-poker";
 
 export class AnalisadorDePeso {
 
@@ -14,11 +15,16 @@ export class AnalisadorDePeso {
         if (!mão) throw new Error('A mão não foi passada');
 
         if (this.éUmPar(mão))
-            return PesoFactory.umPar();
+            return PesoFactory.umPar(mão);
 
         if (this.éDoisPares(mão))
-            return PesoFactory.doisPares();
+            return PesoFactory.doisPares(mão);
 
+        if (this.éUmaSequencia(mão))
+            return PesoFactory.sequencia(mão);
+
+        if (this.éUmFlush(mão))
+            return PesoFactory.flush(mão);
 
         throw new Error('Peso não encontrado');
     }
@@ -27,7 +33,7 @@ export class AnalisadorDePeso {
     //Um Par: Duas cartas do mesmo valor.
     public éUmPar(mão: CartaBase[]): boolean {
 
-        const temUmPar = this.agrupadoPorParEValor(mão)
+        const temUmPar = this.agruparCartasPorValor(mão)
             .filter(x => x === 2)
             .length === 1;
 
@@ -45,7 +51,7 @@ export class AnalisadorDePeso {
 
     }
 
-    public eUmaTrinca(mão: CartaBase[]): boolean {
+    public éUmaTrinca(mão: CartaBase[]): boolean {
 
         const agrupado = this.agrupadoDistintamentePorParEValor(mão);
 
@@ -63,7 +69,7 @@ export class AnalisadorDePeso {
 
     }
 
-    public eUmaSequencia(mão: CartaBase[]): boolean {
+    public éUmaSequencia(mão: CartaBase[]): boolean {
 
         const sequencia = mão
             .sort((a, b) => a.valor - b.valor);
@@ -83,13 +89,13 @@ export class AnalisadorDePeso {
         return true;
     }
 
-    public eUmFlush(mão: CartaBase[]): Boolean {
+    public éUmFlush(mão: CartaBase[]): Boolean {
 
-        const eSequencia = this.eUmaSequencia(mão);
+        const eSequencia = this.éUmaSequencia(mão);
         if (eSequencia)
             return false;
 
-        const naipes = this.agruparCartasPorNaipe(mão);
+        const naipes = UtilPoker.agruparCartasPorNaipe(mão);
         const eFlush = naipes
             .filter(x => x === 5)
             .length === 1;
@@ -99,7 +105,7 @@ export class AnalisadorDePeso {
 
     }
 
-    public eUmFullHouse(mão: CartaBase[]): boolean {
+    public éUmFullHouse(mão: CartaBase[]): boolean {
 
         const agrupado = this.agrupadoDistintamentePorParEValor(mão);
 
@@ -117,7 +123,7 @@ export class AnalisadorDePeso {
 
     }
 
-    public eUmaQuadra(mão: CartaBase[]): boolean {
+    public éUmaQuadra(mão: CartaBase[]): boolean {
 
         const agrupado = this.agrupadoDistintamentePorParEValor(mão);
 
@@ -128,6 +134,34 @@ export class AnalisadorDePeso {
         return tem4CartasComMesmoValor;
 
     }
+
+    public éUmStraightFlush(mão: CartaBase[]): boolean {
+
+        const eUmaSequencia = this.éUmaSequencia(mão);        
+        const todasDoMesmoNaipe = UtilPoker.todasDoMesmoNaipe(mão);
+        const eStraightFlush = eUmaSequencia && todasDoMesmoNaipe;
+
+        return eStraightFlush;
+    }
+
+    public éUmRoyalFlush(mão: CartaBase[]): boolean {
+
+        if (UtilPoker.todasNãoSãoDoMesmoNaipe(mão))
+            return false;
+            
+
+        const ordenado = UtilPoker.ordenarMão(mão);
+        const comecaCom10 = ordenado[0].valor === 10;
+        const eUmaSequencia = this.éUmaSequencia(ordenado);
+        
+        const eRoyal = comecaCom10 && eUmaSequencia;
+        
+
+        return eRoyal;
+
+    }
+
+    
 
 
     /**
@@ -140,7 +174,7 @@ export class AnalisadorDePeso {
      */
     private agrupadoDistintamentePorParEValor(mão: CartaBase[]): number[] {
 
-        const agrupadoPorNaipe = this.agruparCartasPorNaipe(mão)
+        const agrupadoPorNaipe = UtilPoker.agruparCartasPorNaipe(mão)
         // => Array(4) [2, 1, 1, 1]  
         const agrupadoPorValor = this.agruparCartasPorValor(mão)
         // => Array(4) [2, 1, 1, 1]            
@@ -169,7 +203,7 @@ export class AnalisadorDePeso {
 
         debugger;
 
-        const agrupadoPorNaipe = this.agruparCartasPorNaipe(mão);
+        const agrupadoPorNaipe = UtilPoker.agruparCartasPorNaipe(mão);
         // => Array(4) [2, 1, 1, 1]  
         const agrupadoPorValor = this.agruparCartasPorValor(mão);
         // => Array(4) [2, 1, 1, 1]            
@@ -183,37 +217,17 @@ export class AnalisadorDePeso {
 
     }
 
-    /**
-     * 
-     * @param mão Cartas do usuario
-     * @returns Array com a quantidade de cartas agrupadas por naipe
-     * @example Array(4) [2, 1, 1, 1] => 2 cartas repetidas
-     */
-    private agruparCartasPorNaipe(mão: CartaBase[]): number[] {
-
-        const naipes = mão.map(x => x.nome);
-
-        const groupByNaipes = groupBy(naipes, '0');
-        // => Object {C: Array(2), D: Array(1), H: Array(1), S: Array(1)}  
-        const resulto = Object.keys(groupByNaipes)
-            .map(x => groupByNaipes[x])
-            // => Array(4) [Array(2), Array(1), Array(1), Array(1)]    
-            .map(x => x.length);
-        // => Array(4) [2, 1, 1, 1]        
-
-        return resulto;
-
-    }
+    
 
     private agruparCartasPorValor(mão: CartaBase[]): number[] {
 
         const valores = mão.map(x => x.valor.toString());
 
-        const groupByNaipes = groupBy(valores, 'slice', 'funcao');
+        const agrupadoPorValor = groupBy(valores, 'slice', 'funcao');
+        // => Object {4: Array(2), 1: Array(1), 2: Array(1), 3: Array(1)}  
 
-        // => Object {C: Array(2), D: Array(1), H: Array(1), S: Array(1)}  
-        const resultado = Object.keys(groupByNaipes)
-            .map(x => groupByNaipes[x])
+        const resultado = Object.keys(agrupadoPorValor)
+            .map(x => agrupadoPorValor[x])
             // => Array(4) [Array(2), Array(1), Array(1), Array(1)]    
             .map(x => x.length);
         // => Array(4) [2, 1, 1, 1]        
@@ -221,5 +235,7 @@ export class AnalisadorDePeso {
         return resultado;
 
     }
+
+    
 
 }

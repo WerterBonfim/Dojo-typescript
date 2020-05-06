@@ -1,14 +1,34 @@
 import { Jogador } from "./jogador";
+import { AnalisadorDePeso } from "./analisador-peso";
+import { CartaBase } from "./carta";
 
 export class Avaliador {
 
+    private analisadorDePeso: AnalisadorDePeso;
+
+    constructor() {
+
+        this.analisadorDePeso = new AnalisadorDePeso();
+
+    }
+
 
     public calcularGanhador(...jogadores: Jogador[]): Jogador[] {
-
+        
         const avaliacaoDosJogadores = jogadores.map(x => {
+
+            const pesoRegra = this.analisadorDePeso.extrairPeso(x.mão);
+            
+            const porPesoDaRegra = (carta: CartaBase): boolean => 
+                pesoRegra.buscarValorDasCartasDaRegra()
+                    .includes(carta.valor);
+                    
+            
+
             return {
                 jogador: x,
                 peso: x.mão
+                    .filter(porPesoDaRegra)
                     .map(c => c.valor)
                     .reduce((acc, cur) => acc + cur, 0)
             }
